@@ -1,0 +1,51 @@
+dir1 = getDirectory("Choose Source Directory "); 
+dir2 = getDirectory("Choose Source Directory "); 
+run("Image Sequence...", "open=dir1 sort");
+imgName=getTitle(); 
+run("Colour Deconvolution", "vectors=[User values] show [r1]=0.5144506 [g1]=0.6837147 [b1]=0.5175662 [r2]=0.3005915 [g2]=0.78908247 [b2]=0.5357179 [r3]=0.00000 [g3]=0.00000 [b3]=0.00000"); 
+run("Clear Results"); 
+selectWindow(imgName + "-(Colour_3)"); 
+close();
+selectWindow(imgName +"-(Colour_1)"); 
+setAutoThreshold("Default");
+
+//run("Threshold...");
+waitForUser( "Set threshold and click OK." );
+setOption("BlackBackground", false);
+run("Convert to Mask", "method=Default background=Light");
+run("Watershed", "stack");
+run("Analyze Particles...", "size=3-25 exclude include summarize stack");
+
+title = getTitle(); 
+saveAs("Results", dir2 + title + ".csv"); 
+run("Close")
+close();
+
+selectWindow(imgName +"-(Colour_2)"); 
+
+setAutoThreshold("Default");
+
+run( "Threshold..." );
+waitForUser( "Set threshold and click OK." );
+run("Convert to Mask", "method=Default background=Light");
+
+list = getFileList(dir1); 
+
+
+for (n=1; n<=list.length; n++) {
+          setSlice(n);
+          run("Measure");
+      }
+
+     
+title = getTitle(); 
+saveAs("Results", dir2 + title + ".csv"); 
+run("Clear Results"); 
+selectWindow(imgName +"-(Colour_2)"); 
+close();
+selectWindow("Results"); 
+run("Close")
+
+selectWindow("Colour Deconvolution")
+run("Close")
+close()
